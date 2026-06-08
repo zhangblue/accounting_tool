@@ -85,20 +85,25 @@ accounting_tool/
 
 ### 后端
 - ✅ 数据库连接和自动迁移
-- ✅ finance_type 表（财务类型管理）
+- ✅ classification 表（分类管理）
+- ✅ accounts 表（账目记录）
 - ✅ 健康检查端点 (`GET /health`)
-- ✅ 基础账户创建端点 (`POST /api/accounts`)
+- ✅ 创建分类端点 (`POST /api/classifications`)
+- ✅ CORS 跨域支持
+- ✅ SeaORM entities 自动生成
 
 ### 前端
-- ✅ 基础项目结构
-- ✅ Vite + React + TypeScript 配置
+- ✅ 基础项目结构（React 19 + Vite + TypeScript）
+- ✅ 菜单导航结构
+- ✅ "我的设置" > "添加类型" 子菜单
+- ✅ 添加分类表单页面
 
 ## 开发中的功能
 
 - 🔄 首页菜单和财务统计（收入、支出、剩余）
-- 🔄 前后端API集成
+- 🔄 账本交易记录表格显示
 - 🔄 用户认证系统
-- 🔄 交易记录管理
+- 🔄 数据统计和分析功能
 
 ## API文档
 

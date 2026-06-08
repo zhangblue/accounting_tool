@@ -34,6 +34,11 @@ impl MigrationTrait for Migration {
                             .not_null(),
                     )
                     .col(
+                        ColumnDef::new(Accounts::Description)
+                            .text()
+                            .null(),
+                    )
+                    .col(
                         ColumnDef::new(Accounts::ClassificationId)
                             .big_integer()
                             .not_null(),
@@ -75,6 +80,7 @@ enum Accounts {
     Amount,
     SelfAccount,
     TradingTime,
+    Description,
     ClassificationId,
 }
 

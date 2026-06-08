@@ -84,7 +84,7 @@ accounting_tool/
 │   ├── Cargo.toml
 │   └── CLAUDE.md
 ├── database/             # 数据库脚本
-│   └── db.sql            # 完整数据库schema
+│   └── create_table.sql            # 完整数据库schema
 ├── README.md
 └── CLAUDE.md
 ```

@@ -1,5 +1,5 @@
 import { Card, Row, Col, Statistic } from 'antd'
-import { ArrowUpOutlined, ArrowDownOutlined, DollarOutlined } from '@ant-design/icons'
+import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 import type { Transaction } from '../types'
 
@@ -17,8 +17,6 @@ export function Home({ transactions }: HomeProps) {
   const totalExpense = transactions
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0)
-
-  const balance = totalIncome - totalExpense
 
   const expenseByType = transactions
     .filter(t => t.type === 'expense')
@@ -69,28 +67,6 @@ export function Home({ transactions }: HomeProps) {
               value={totalExpense}
               prefix={<ArrowDownOutlined style={{ color: '#ff4d4f' }} />}
               valueStyle={{ color: '#ff4d4f' }}
-              suffix="元"
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={6}>
-          <Card>
-            <Statistic
-              title="全部结余"
-              value={balance}
-              prefix={<DollarOutlined style={{ color: balance >= 0 ? '#1890ff' : '#ff4d4f' }} />}
-              valueStyle={{ color: balance >= 0 ? '#1890ff' : '#ff4d4f' }}
-              suffix="元"
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={6}>
-          <Card>
-            <Statistic
-              title="期初结余"
-              value={0}
-              prefix={<DollarOutlined style={{ color: '#faad14' }} />}
-              valueStyle={{ color: '#faad14' }}
               suffix="元"
             />
           </Card>

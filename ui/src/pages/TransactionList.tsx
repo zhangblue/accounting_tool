@@ -28,10 +28,11 @@ export function TransactionList({ transactions, onAdd, onDelete, onEdit }: Trans
   }
 
   const columns = [
-    { title: '描述', dataIndex: 'description', key: 'description' },
-    { title: '金额', dataIndex: 'amount', key: 'amount' },
+    { title: '编号', dataIndex: 'id', key: 'id' },
     { title: '类型', dataIndex: 'type', key: 'type', render: (type: string) => type === 'income' ? '收入' : '支出' },
+    { title: '金额', dataIndex: 'amount', key: 'amount' },
     { title: '日期', dataIndex: 'date', key: 'date' },
+    { title: '描述', dataIndex: 'description', key: 'description' },
     {
       title: '操作',
       key: 'action',
@@ -59,7 +60,7 @@ export function TransactionList({ transactions, onAdd, onDelete, onEdit }: Trans
             <Input type="number" />
           </Form.Item>
           <Form.Item name="type" label="类型" rules={[{ required: true }]}>
-            <select><option value="income">收入</option><option value="expense">支出</option></select>
+            <Input placeholder="请输入类型，如：收入、支出等" />
           </Form.Item>
           <Form.Item name="date" label="日期" rules={[{ required: true }]}>
             <Input type="date" />

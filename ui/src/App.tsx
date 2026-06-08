@@ -3,6 +3,7 @@ import { Layout, Menu, Button, DatePicker } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { Home } from './pages/Home'
 import { TransactionList } from './pages/TransactionList'
+import { AddClassificationType } from './pages/AddClassificationType'
 import type { Transaction } from './types'
 import './App.css'
 
@@ -31,7 +32,13 @@ function App() {
       case '2':
         return <TransactionList transactions={transactions} onAdd={handleAddTransaction} onDelete={handleDeleteTransaction} onEdit={handleEditTransaction} />
       case '3':
+        return <div style={{ padding: '20px' }}>统计分析</div>
+      case '4':
+        return <div style={{ padding: '20px' }}>账户分析</div>
+      case '5':
         return <div style={{ padding: '20px' }}>我的设置</div>
+      case '5-1':
+        return <AddClassificationType />
       default:
         return <Home transactions={transactions} />
     }
@@ -53,7 +60,9 @@ function App() {
             <Menu.Item key="2" style={{ color: '#fff' }}>账本</Menu.Item>
             <Menu.Item key="3" style={{ color: '#fff' }}>统计分析</Menu.Item>
             <Menu.Item key="4" style={{ color: '#fff' }}>账户分析</Menu.Item>
-            <Menu.Item key="5" style={{ color: '#fff' }}>我的设置</Menu.Item>
+            <Menu.SubMenu key="5" title="我的设置" style={{ color: '#fff' }}>
+              <Menu.Item key="5-1" style={{ color: '#fff' }}>添加类型</Menu.Item>
+            </Menu.SubMenu>
           </Menu>
         </Sider>
         <Content style={{ overflow: 'auto' }}>
