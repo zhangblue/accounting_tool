@@ -3,29 +3,27 @@ import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
 import type { Transaction } from '../types'
 
-interface HomeProps {
-  transactions: Transaction[]
-}
-
 const COLORS = ['#ff7a45', '#ffc069', '#95de64', '#13c2c2', '#1890ff', '#722ed1']
 
-export function Home({ transactions }: HomeProps) {
+export function Home() {
+  const transactions: Transaction[] = []
   const totalIncome = transactions
     .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + t.amount, 0)
+    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0)
 
   const totalExpense = transactions
     .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + t.amount, 0)
+    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0)
 
   const expenseByType = transactions
     .filter(t => t.type === 'expense')
     .reduce((acc, t) => {
+      const amount = parseFloat(t.amount.toString())
       const existing = acc.find(item => item.name === t.description)
       if (existing) {
-        existing.value += t.amount
+        existing.value += amount
       } else {
-        acc.push({ name: t.description, value: t.amount })
+        acc.push({ name: t.description, value: amount })
       }
       return acc
     }, [] as Array<{ name: string; value: number }>)

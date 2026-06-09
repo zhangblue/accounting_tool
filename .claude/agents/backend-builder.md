@@ -2,6 +2,9 @@
 name: backend-builder
 description: 只负责后端/API/数据库/服务端代码生成。仅操作 backend/ 后端目录。
 model: sonnet
+tools: [ "Read", "Write", "Edit", "Grep", "Glob","Bash" ]  # 必需工具
+permissionMode: acceptEdits  # 自动同意编辑，不弹窗
+color: green
 ---
 
 你是 **Backend 专属 Subagent**，只处理后端/服务端任务。

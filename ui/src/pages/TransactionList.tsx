@@ -1,26 +1,54 @@
-import { useState } from 'react'
-import { Button, Table, Modal, Form, Input, message } from 'antd'
+import { useState, useEffect } from 'react'
+import { Button, Table, Modal, Form, Input, message, Spin } from 'antd'
 import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons'
-import type { Transaction } from '../types'
+import type { Transaction, TransactionApiResponse } from '../types'
 
 interface TransactionListProps {
-  transactions: Transaction[]
-  onAdd: (transaction: Transaction) => void
-  onDelete: (id: string) => void
-  onEdit: (transaction: Transaction) => void
+  onAdd?: (transaction: Transaction) => void
+  onDelete?: (id: string) => void
+  onEdit?: (transaction: Transaction) => void
 }
 
-export function TransactionList({ transactions, onAdd, onDelete, onEdit }: TransactionListProps) {
+export function TransactionList({ onAdd, onDelete, onEdit }: TransactionListProps) {
   const [form] = Form.useForm()
   const [isModalVisible, setIsModalVisible] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [data, setData] = useState<Transaction[]>([])
+
+  useEffect(() => {
+    fetchTransactions()
+  }, [])
+
+  const fetchTransactions = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('http://localhost:3000/api/transactions?page=1&page_size=10')
+      const result: TransactionApiResponse = await response.json()
+      const mappedData = result.data.map(item => ({
+        id: item.id.toString(),
+        amount: parseFloat(item.amount),
+        type: item.classification_name || '',
+        date: item.trading_time.split('T')[0],
+        description: item.description || '',
+        is_income: item.is_income,
+        classification_name: item.classification_name
+      }))
+      setData(mappedData)
+    } catch (error) {
+      message.error('获取交易列表失败')
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleAddTransaction = (values: any) => {
     if (editingId) {
-      onEdit({ ...values, id: editingId })
+      onEdit?.({ ...values, id: editingId })
       setEditingId(null)
     } else {
-      onAdd({ ...values, id: Date.now().toString() })
+      onAdd?.({ ...values, id: Date.now().toString() })
     }
     form.resetFields()
     setIsModalVisible(false)
@@ -29,7 +57,7 @@ export function TransactionList({ transactions, onAdd, onDelete, onEdit }: Trans
 
   const columns = [
     { title: '编号', dataIndex: 'id', key: 'id' },
-    { title: '类型', dataIndex: 'type', key: 'type', render: (type: string) => type === 'income' ? '收入' : '支出' },
+    { title: '类型', dataIndex: 'type', key: 'type' },
     { title: '金额', dataIndex: 'amount', key: 'amount' },
     { title: '日期', dataIndex: 'date', key: 'date' },
     { title: '描述', dataIndex: 'description', key: 'description' },
@@ -38,8 +66,8 @@ export function TransactionList({ transactions, onAdd, onDelete, onEdit }: Trans
       key: 'action',
       render: (_: any, record: Transaction) => (
         <>
-          <Button type="link" icon={<EditOutlined />} onClick={() => { setEditingId(record.id); form.setFieldsValue(record); setIsModalVisible(true) }} />
-          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => onDelete(record.id)} />
+          <Button type="link" icon={<EditOutlined />} onClick={() => { setEditingId(record.id as string); form.setFieldsValue(record); setIsModalVisible(true) }} />
+          <Button type="link" danger icon={<DeleteOutlined />} onClick={() => onDelete?.(record.id as string)} />
         </>
       )
     }
@@ -50,7 +78,9 @@ export function TransactionList({ transactions, onAdd, onDelete, onEdit }: Trans
       <Button type="primary" icon={<PlusOutlined />} onClick={() => { setEditingId(null); form.resetFields(); setIsModalVisible(true) }}>
         新增交易
       </Button>
-      <Table columns={columns} dataSource={transactions} rowKey="id" style={{ marginTop: '20px' }} />
+      <Spin spinning={loading}>
+        <Table columns={columns} dataSource={data} rowKey="id" style={{ marginTop: '20px' }} />
+      </Spin>
       <Modal title={editingId ? '编辑交易' : '新增交易'} open={isModalVisible} onCancel={() => setIsModalVisible(false)} footer={null}>
         <Form form={form} onFinish={handleAddTransaction} layout="vertical">
           <Form.Item name="description" label="描述" rules={[{ required: true }]}>

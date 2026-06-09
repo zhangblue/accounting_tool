@@ -11,6 +11,7 @@ dependencies = [
  "chrono",
  "dotenvy",
  "migration",
+ "rust_decimal",
  "sea-orm",
  "sea-orm-migration",
  "serde",

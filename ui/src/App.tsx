@@ -4,33 +4,19 @@ import { PlusOutlined } from '@ant-design/icons'
 import { Home } from './pages/Home'
 import { TransactionList } from './pages/TransactionList'
 import { AddClassificationType } from './pages/AddClassificationType'
-import type { Transaction } from './types'
 import './App.css'
 
 const { Header, Content, Sider } = Layout
 
 function App() {
-  const [transactions, setTransactions] = useState<Transaction[]>([])
   const [currentPage, setCurrentPage] = useState('1')
-
-  const handleAddTransaction = (transaction: Transaction) => {
-    setTransactions([...transactions, transaction])
-  }
-
-  const handleDeleteTransaction = (id: string) => {
-    setTransactions(transactions.filter(t => t.id !== id))
-  }
-
-  const handleEditTransaction = (transaction: Transaction) => {
-    setTransactions(transactions.map(t => t.id === transaction.id ? transaction : t))
-  }
 
   const renderContent = () => {
     switch (currentPage) {
       case '1':
-        return <Home transactions={transactions} />
+        return <Home />
       case '2':
-        return <TransactionList transactions={transactions} onAdd={handleAddTransaction} onDelete={handleDeleteTransaction} onEdit={handleEditTransaction} />
+        return <TransactionList />
       case '3':
         return <div style={{ padding: '20px' }}>统计分析</div>
       case '4':
@@ -40,7 +26,7 @@ function App() {
       case '5-1':
         return <AddClassificationType />
       default:
-        return <Home transactions={transactions} />
+        return <Home />
     }
   }
 

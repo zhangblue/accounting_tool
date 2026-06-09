@@ -16,4 +16,5 @@
 - amount: NUMERIC(16,2) - 金额
 - self_account: VARCHAR(19) - 账户
 - trading_time: TIMESTAMP - 交易时间
+- description: TEXT - 描述,
 - classification_id: INT8 - 外键指向classification
