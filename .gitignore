@@ -1,5 +1,4 @@
 .idea/
 .env
 backend/.env
-backend/migration/.gitignore
-
+.claude/settings.local.json
