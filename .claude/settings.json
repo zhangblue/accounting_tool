@@ -1,22 +1,14 @@
 {
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
-      "Read(./**/*)",
-      "Write(./**/*)",
-      "Edit(./**/*)",
-      "Delete(./**/*)",
-      "Glob(./**/*)",
-      "Grep(./**/*)",
-      "Bash(./**/*)"
-    ],
-    "deny": [
-      "Read(/etc/**/*)",
-      "Read(~/**/*)",
-      "Write(/etc/**/*)",
-      "Write(~/**/*)",
-      "Bash(sudo *)",
-      "Bash(rm -rf /)",
-      "Bash(rm -rf ~)"
+      "Read(/**)",
+      "Edit(/**)",
+      "Write(/**)",
+      "Glob(/**)",
+      "Grep(/**)",
+      "Cd(/**)",
+      "Bash"
     ]
   }
 }

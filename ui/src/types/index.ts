@@ -21,3 +21,9 @@ export interface TransactionApiResponse {
   page: number
   page_size: number
 }
+
+export interface StatisticsSummaryResponse {
+  totalIncome: string
+  totalExpense: string
+  period: string
+}

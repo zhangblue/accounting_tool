@@ -1,5 +1,9 @@
 # 后端CLAUDE.md
 
+## 代码目录
+
+后端代码全部放在 backend/ 目录下，禁止混放
+
 ## 开发框架
 
 - Rust + Axum + SeaORM + PostgreSQL

@@ -1,5 +1,4 @@
 mod entities;
-mod statistics;
 
 use axum::{
     routing::{get, post},
@@ -72,7 +71,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/accounts", post(create_account))
         .route("/api/classifications", post(create_classification))
         .route("/api/transactions", get(get_transactions))
-        .route("/api/statistics/summary", post(statistics::get_statistics_summary))
         .with_state(Arc::new(db))
         .layer(cors);
 

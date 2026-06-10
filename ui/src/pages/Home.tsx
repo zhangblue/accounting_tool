@@ -1,19 +1,46 @@
-import { Card, Row, Col, Statistic } from 'antd'
+import { useState, useEffect } from 'react'
+import { Card, Row, Col, Statistic, Spin } from 'antd'
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
-import type { Transaction } from '../types'
+import type { Transaction, StatisticsSummaryResponse } from '../types'
+import { Dayjs } from 'dayjs'
 
 const COLORS = ['#ff7a45', '#ffc069', '#95de64', '#13c2c2', '#1890ff', '#722ed1']
 
-export function Home() {
-  const transactions: Transaction[] = []
-  const totalIncome = transactions
-    .filter(t => t.type === 'income')
-    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0)
+interface HomeProps {
+  dateRange: [Dayjs, Dayjs]
+}
 
-  const totalExpense = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((sum, t) => sum + parseFloat(t.amount.toString()), 0)
+export function Home({ dateRange }: HomeProps) {
+  const [loading, setLoading] = useState(false)
+  const [totalIncome, setTotalIncome] = useState(0)
+  const [totalExpense, setTotalExpense] = useState(0)
+
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      setLoading(true)
+      try {
+        const response = await fetch('http://localhost:3000/api/statistics/summary', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            start_date: dateRange[0].format('YYYY-MM-DD'),
+            end_date: dateRange[1].format('YYYY-MM-DD')
+          })
+        })
+        const data: StatisticsSummaryResponse = await response.json()
+        setTotalIncome(parseFloat(data.totalIncome))
+        setTotalExpense(parseFloat(data.totalExpense))
+      } catch (error) {
+        console.error('获取统计数据失败:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchStatistics()
+  }, [dateRange])
+
+  const transactions: Transaction[] = []
 
   const expenseByType = transactions
     .filter(t => t.type === 'expense')
@@ -45,31 +72,34 @@ export function Home() {
   ]
 
   return (
-    <div style={{ padding: '20px' }}>
-      <Row gutter={16} style={{ marginBottom: '20px' }}>
-        <Col xs={24} sm={6}>
-          <Card>
-            <Statistic
-              title="全部收入"
-              value={totalIncome}
-              prefix={<ArrowUpOutlined style={{ color: '#52c41a' }} />}
-              valueStyle={{ color: '#52c41a' }}
-              suffix="元"
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={6}>
-          <Card>
-            <Statistic
-              title="全部支出"
-              value={totalExpense}
-              prefix={<ArrowDownOutlined style={{ color: '#ff4d4f' }} />}
-              valueStyle={{ color: '#ff4d4f' }}
-              suffix="元"
-            />
-          </Card>
-        </Col>
-      </Row>
+    <Spin spinning={loading}>
+      <div style={{ padding: '20px' }}>
+        <Row gutter={16} style={{ marginBottom: '20px' }}>
+          <Col xs={24} sm={6}>
+            <Card>
+              <Statistic
+                title="全部收入"
+                value={totalIncome}
+                prefix={<ArrowUpOutlined style={{ color: '#52c41a' }} />}
+                valueStyle={{ color: '#52c41a' }}
+                suffix="元"
+                precision={2}
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={6}>
+            <Card>
+              <Statistic
+                title="全部支出"
+                value={totalExpense}
+                prefix={<ArrowDownOutlined style={{ color: '#ff4d4f' }} />}
+                valueStyle={{ color: '#ff4d4f' }}
+                suffix="元"
+                precision={2}
+              />
+            </Card>
+          </Col>
+        </Row>
 
       <Row gutter={16} style={{ marginTop: '20px' }}>
         <Col xs={24} lg={12}>
@@ -101,6 +131,7 @@ export function Home() {
           </Card>
         </Col>
       </Row>
-    </div>
+      </div>
+    </Spin>
   )
 }

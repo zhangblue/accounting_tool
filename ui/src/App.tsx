@@ -4,17 +4,22 @@ import { PlusOutlined } from '@ant-design/icons'
 import { Home } from './pages/Home'
 import { TransactionList } from './pages/TransactionList'
 import { AddClassificationType } from './pages/AddClassificationType'
+import dayjs, { Dayjs } from 'dayjs'
 import './App.css'
 
 const { Header, Content, Sider } = Layout
 
 function App() {
   const [currentPage, setCurrentPage] = useState('1')
+  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
+    dayjs().startOf('month'),
+    dayjs().endOf('month')
+  ])
 
   const renderContent = () => {
     switch (currentPage) {
       case '1':
-        return <Home />
+        return <Home dateRange={dateRange} />
       case '2':
         return <TransactionList />
       case '3':
@@ -26,7 +31,7 @@ function App() {
       case '5-1':
         return <AddClassificationType />
       default:
-        return <Home />
+        return <Home dateRange={dateRange} />
     }
   }
 
@@ -35,7 +40,10 @@ function App() {
       <Header style={{ background: '#fff', padding: '0 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', height: '64px' }}>
         <div style={{ fontSize: '18px', fontWeight: 'bold' }}>首页</div>
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <DatePicker.RangePicker placeholder={['Start Date', 'End Date']} />
+          <DatePicker.RangePicker
+            value={dateRange}
+            onChange={(dates) => dates && setDateRange(dates as [Dayjs, Dayjs])}
+          />
           <Button type="primary" icon={<PlusOutlined />}>记一笔</Button>
         </div>
       </Header>
