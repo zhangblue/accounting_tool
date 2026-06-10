@@ -27,3 +27,7 @@ export interface StatisticsSummaryResponse {
   totalExpense: string
   period: string
 }
+
+export interface ExpenseByTypeResponse {
+  data: Array<{ name: string; value: string }>
+}

@@ -73,6 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .route("/api/classifications", post(create_classification))
         .route("/api/transactions", get(get_transactions))
         .route("/api/statistics/summary", post(statistics::get_statistics_summary))
+        .route("/api/statistics/expense-by-type", post(statistics::get_expense_by_type))
         .with_state(Arc::new(db))
         .layer(cors);
 

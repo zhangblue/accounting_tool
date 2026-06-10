@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Card, Row, Col, Statistic, Spin } from 'antd'
 import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons'
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
-import type { Transaction, StatisticsSummaryResponse } from '../types'
+import type { StatisticsSummaryResponse, ExpenseByTypeResponse } from '../types'
 import { Dayjs } from 'dayjs'
 
 const COLORS = ['#ff7a45', '#ffc069', '#95de64', '#13c2c2', '#1890ff', '#722ed1']
@@ -15,22 +15,47 @@ export function Home({ dateRange }: HomeProps) {
   const [loading, setLoading] = useState(false)
   const [totalIncome, setTotalIncome] = useState(0)
   const [totalExpense, setTotalExpense] = useState(0)
+  const [expenseByType, setExpenseByType] = useState<Array<{ name: string; value: number }>>([
+    { name: '食物', value: 500 },
+    { name: '交通', value: 300 },
+    { name: '娱乐', value: 200 },
+    { name: '其他', value: 150 }
+  ])
 
   useEffect(() => {
     const fetchStatistics = async () => {
       setLoading(true)
       try {
-        const response = await fetch('http://localhost:3000/api/statistics/summary', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            start_date: dateRange[0].format('YYYY-MM-DD'),
-            end_date: dateRange[1].format('YYYY-MM-DD')
+        const [summaryRes, expenseRes] = await Promise.all([
+          fetch('http://localhost:3000/api/statistics/summary', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              start_date: dateRange[0].format('YYYY-MM-DD'),
+              end_date: dateRange[1].format('YYYY-MM-DD')
+            })
+          }),
+          fetch('http://localhost:3000/api/statistics/expense-by-type', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              start_date: dateRange[0].format('YYYY-MM-DD'),
+              end_date: dateRange[1].format('YYYY-MM-DD')
+            })
           })
-        })
-        const data: StatisticsSummaryResponse = await response.json()
-        setTotalIncome(parseFloat(data.totalIncome))
-        setTotalExpense(parseFloat(data.totalExpense))
+        ])
+        const summaryData: StatisticsSummaryResponse = await summaryRes.json()
+        const expenseData: ExpenseByTypeResponse = await expenseRes.json()
+
+        setTotalIncome(parseFloat(summaryData.totalIncome))
+        setTotalExpense(parseFloat(summaryData.totalExpense))
+
+        if (expenseData.data && expenseData.data.length > 0) {
+          setExpenseByType(expenseData.data.map(item => ({
+            name: item.name,
+            value: parseFloat(item.value)
+          })))
+        }
       } catch (error) {
         console.error('获取统计数据失败:', error)
       } finally {
@@ -40,27 +65,6 @@ export function Home({ dateRange }: HomeProps) {
     fetchStatistics()
   }, [dateRange])
 
-  const transactions: Transaction[] = []
-
-  const expenseByType = transactions
-    .filter(t => t.type === 'expense')
-    .reduce((acc, t) => {
-      const amount = parseFloat(t.amount.toString())
-      const existing = acc.find(item => item.name === t.description)
-      if (existing) {
-        existing.value += amount
-      } else {
-        acc.push({ name: t.description, value: amount })
-      }
-      return acc
-    }, [] as Array<{ name: string; value: number }>)
-
-  const mockData = expenseByType.length > 0 ? expenseByType : [
-    { name: '食物', value: 500 },
-    { name: '交通', value: 300 },
-    { name: '娱乐', value: 200 },
-    { name: '其他', value: 150 }
-  ]
 
   const monthlyData = [
     { month: '1月', expense: 1200 },
@@ -106,8 +110,8 @@ export function Home({ dateRange }: HomeProps) {
           <Card title="支出类型占比">
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie data={mockData} cx="50%" cy="50%" labelLine={false} label={({ name, value }) => `${name}: ${value}`} outerRadius={80} fill="#8884d8" dataKey="value">
-                  {mockData.map((_, index) => (
+                <Pie data={expenseByType} cx="50%" cy="50%" labelLine={false} label={({ name, value }) => `${name}: ${value}`} outerRadius={80} fill="#8884d8" dataKey="value">
+                  {expenseByType.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
